@@ -12,15 +12,40 @@ require 'open-uri'
 				get_scores
 			when "hi"
 				say_hi
+      when "trivia"
+        get_trivia
 			else
 				@final_results = "Command " + @command.upcase + " not found :("
 		end
 
 		twilio_message(@final_results)
-		render :xml => @message.to_xml( :root => 'Response' )		
+		render :xml => @message.to_xml( :root => 'Response' )
+    puts "Text length ===> " + @final_results.length.to_s if Rails.env.development?
 	end
 
 	private
+
+    def get_trivia
+			message = @incoming_body.split(' ', 2);
+      if message[1]
+        # there appears to be some kind of sub_command. What is it?
+        sub_command = message[1]
+        case sub_command
+          when "answer"
+            return_message = "The answer is Cam Neely. Find Bruins tickets at BoxRowSeat.com" 
+          when "clue"
+            return_message = "He once killed a man. Reply TRIVIA ANSWER for the answer."
+          else
+            return_message = "Reply TRIVIA CLUE or TRIVIA ANSWER, or TRIVIA for today's trivia question."
+        end
+      else 
+        # no sub command, so send them the answer
+        return_message = "What Boston Bruins player's #8 is hanging in the Garden rafters? Reply TRIVIA CLUE or TRIVIA ANSWER"
+      end
+      # are they looking for the question or the answer?
+
+      @final_results = return_message
+    end
 
 		def get_weather
 			parse_message
@@ -96,7 +121,6 @@ require 'open-uri'
 				message = @incoming_body.split(' ', 2)
 				@location = message[1]
 			end
-
 		end
 
 		def twilio_message(msg)
