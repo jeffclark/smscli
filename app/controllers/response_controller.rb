@@ -5,7 +5,7 @@ protect_from_forgery :except => [:interpret_command]
 require 'open-uri'
 
 	def interpret_command
-		case @command
+		case @command.downcase
 			when "weather"
 				get_weather			
 			when "score"
