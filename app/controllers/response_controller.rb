@@ -13,7 +13,7 @@ require 'open-uri'
 			when "hi"
 				say_hi
 			else
-				@final_results = "Command " + @command.upcase + " not found."
+				@final_results = "Command " + @command.upcase + " not found :("
 		end
 
 		twilio_message(@final_results)
@@ -21,21 +21,6 @@ require 'open-uri'
 	end
 
 	private
-
-		def parse_message
-			message = @incoming_body.split(' ', 3);
-
-			all_sub_commands = [ "today", "tomorrow", "tmrw", "tom", "forecast", "4cast" ]
-
-			if all_sub_commands.include? message[1].downcase
-				@sub_command = message[1]
-				@location = message[2]
-			else
-				message = @incoming_body.split(' ', 2)
-				@location = message[1]
-			end
-
-		end
 
 		def get_weather
 			parse_message
@@ -97,6 +82,21 @@ require 'open-uri'
 
 		def say_hi
 			@final_results = "hi!"
+		end
+
+		def parse_message
+			message = @incoming_body.split(' ', 3);
+
+			all_sub_commands = [ "today", "tomorrow", "tmrw", "tom", "forecast", "4cast" ]
+
+			if all_sub_commands.include? message[1].downcase
+				@sub_command = message[1]
+				@location = message[2]
+			else
+				message = @incoming_body.split(' ', 2)
+				@location = message[1]
+			end
+
 		end
 
 		def twilio_message(msg)
