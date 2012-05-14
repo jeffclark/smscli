@@ -12,6 +12,8 @@ require 'open-uri'
 				get_scores
 			when "hi"
 				say_hi
+			when "sox"
+				sox_tonight
 			else
 				@final_results = "Command " + @command.upcase + " not found :("
 		end
@@ -21,6 +23,13 @@ require 'open-uri'
 	end
 
 	private
+
+		def sox_tonight
+			game_today_api_url = "http://localhost:3030/game_today/Boston-Red-Sox.json"
+			result = JSON.parse(open(game_today_api_url).read)
+			# result['message'] etc etc etc
+			@final_results = result.to_s
+		end
 
 		def get_weather
 			parse_message
