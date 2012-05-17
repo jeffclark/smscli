@@ -17,16 +17,16 @@ location can equal a zipcode, city name or airport code.
 
 === Future considerations:
 
-* Sports scores: "score Bruins" : BOS 4 NYR 2
+* Sports scores! "score Bruins" : BOS 4 NYR 2
 
-* Current date/time in a city "time Stillwater" : "Currently 7:45pm 4/5/2013 in Stillwater, OK"
+* Current date/time in a city! "time Stillwater" : "Currently 7:45pm 4/5/2013 in Stillwater, OK"
 
-* Latest tweet from a user "@ClarkleSparkle" : "@ClarkleSparkle: zomg I love @TheBerls"
+* Latest tweet from a user! "@ClarkleSparkle" : "@ClarkleSparkle: zomg I love @TheBerls"
 
-* Current stock price "stock $ZIP" : "14.65 (1 minute ago)
+* Current stock price! "stock $ZIP" : "14.65 (1 minute ago)
 
-* Math formula "2 + 2" : "2 + 2 = 4"
+* Math questions! "2 + 2" : "2 + 2 = 4"
 
-* Random number generator "random 10" : "Random number between 1-10: 4"
+* Random number generator! "random 10" : "Random number between 1-10: 4"
 
-* Bill splitter "split $125.50 by 4" : "20% tip: $37.65, 15% tip: $36.08"
+* Bill splitter (my personal favorite)! "split $125.50 by 4" : "20% tip: $37.65, 15% tip: $36.08"

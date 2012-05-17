@@ -5,7 +5,7 @@ protect_from_forgery :except => [:interpret_command]
 require 'open-uri'
 
 	def interpret_command
-		case @command
+		case @command.downcase
 			when "weather"
 				get_weather			
 			when "score"
@@ -19,7 +19,8 @@ require 'open-uri'
 		end
 
 		twilio_message(@final_results)
-		render :xml => @message.to_xml( :root => 'Response' )		
+		render :xml => @message.to_xml( :root => 'Response' )
+    puts "Text length ===> " + @final_results.length.to_s if Rails.env.development?
 	end
 
 	private
@@ -146,7 +147,6 @@ require 'open-uri'
 				message = @incoming_body.split(' ', 2)
 				@location = message[1]
 			end
-
 		end
 
 		def twilio_message(msg)
