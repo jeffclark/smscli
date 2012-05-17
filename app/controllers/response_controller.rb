@@ -1,5 +1,5 @@
 class ResponseController < ApplicationController
-before_filter :prepare_request
+before_filter :prepare_request, :except => :game_tonight
 protect_from_forgery :except => [:interpret_command]
 
 require 'open-uri'
@@ -12,6 +12,8 @@ require 'open-uri'
 				get_scores
 			when "hi"
 				say_hi
+			when "sox"
+				game_tonight
 			else
 				@final_results = "Command " + @command.upcase + " not found :("
 		end
@@ -21,6 +23,54 @@ require 'open-uri'
 	end
 
 	private
+
+		def game_tonight
+			# pass in team and venue
+			# pass team along to API
+			# if we get a response, check it against venue
+			# if true, send the opponent and the time
+			# if false, do nothing
+
+			if Rails.env.production?
+				game_today_api_domain = "www.boxrowseat.com"
+			else
+				game_today_api_domain = "localhost:3030"
+			end
+			params['team'] = "Boston-Red-Sox"
+			params['venue'] = "Tropicana Field"
+
+			game_today_api_url = "http://#{game_today_api_domain}/game_today/#{params['team']}.json"
+			result = JSON.parse(open(game_today_api_url).read)
+
+			if result['error']
+				render json: {
+					error: result['message']
+				}
+			else
+				game_location = result['location'].downcase.gsub(/\s+/, '-').gsub(/[^a-z0-9_-]/, '').squeeze('-')
+				request_location = params['venue'].downcase.gsub(/\s+/, '-').gsub(/[^a-z0-9_-]/, '').squeeze('-')
+
+				if request_location == game_location
+					opponent = result['title'].split(' at ').first
+					starty = Time.parse(result['start_time']).strftime('%-1I:%M%p %Z')
+					
+					@final_results = "Sox game vs. #{opponent} at #{starty}"
+				else
+					@final_results = "Not today."
+				end
+
+		    #render json: {
+		     # result: (request_location == game_location.downcase),
+					#opponent: opponent,
+		      #start_time: starty.to_s
+		      #team: params['team'],
+		      #request_location: request_location,
+		      #game_location: game_location,
+		      #brs_result: result.to_s,
+		    #}
+			end
+
+		end
 
 		def get_weather
 			parse_message

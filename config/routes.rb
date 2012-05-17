@@ -1,6 +1,8 @@
 Smscli::Application.routes.draw do
   
   match '/response/' => 'response#interpret_command'
+  match '/game_tonight/:team/:venue' => 'response#game_tonight'
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
