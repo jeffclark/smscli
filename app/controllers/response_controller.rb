@@ -38,7 +38,7 @@ require 'open-uri'
 				game_today_api_domain = "localhost:3030"
 			end
 			params['team'] = "Boston-Red-Sox"
-			params['venue'] = "Tropicana Field"
+			params['venue'] = "Fenway Park"
 
 			game_today_api_url = "http://#{game_today_api_domain}/game_today/#{params['team']}.json"
 			result = JSON.parse(open(game_today_api_url).read)
