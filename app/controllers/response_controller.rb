@@ -4,47 +4,6 @@ protect_from_forgery :except => [:interpret_command]
 
 require 'open-uri'
 
-	def game_tonight
-		# pass in team and venue
-		# pass team along to API
-		# if we get a response, check it against venue
-		# if true, send the opponent and the time
-		# if false, do nothing
-
-		if Rails.env.production?
-			game_today_api_domain = "www.boxrowseat.com"
-		else
-			game_today_api_domain = "localhost:3030"
-		end
-
-		game_today_api_url = "http://#{game_today_api_domain}/game_today/#{params['team']}.json"
-		result = JSON.parse(open(game_today_api_url).read)
-
-		if result['error']
-			render json: {
-				error: result['message']
-			}
-		else
-			game_location = result['location'].downcase.gsub(/\s+/, '-').gsub(/[^a-z0-9_-]/, '').squeeze('-')
-			request_location = params['venue'].downcase.gsub(/\s+/, '-').gsub(/[^a-z0-9_-]/, '').squeeze('-')
-
-			opponent = result['title'].split(' at ').first
-
-			starty = Time.parse(result['start_time']).strftime('%-1I:%M%p %Z')
-	    render json: {
-	      result: (request_location == game_location.downcase),
-				opponent: opponent,
-	      start_time: starty.to_s
-	      #team: params['team'],
-	      #request_location: request_location,
-	      #game_location: game_location,
-	      #brs_result: result.to_s,
-	    }
-
-		end
-
-	end
-
 	def interpret_command
 		case @command
 			when "weather"
@@ -54,7 +13,7 @@ require 'open-uri'
 			when "hi"
 				say_hi
 			when "sox"
-				sox_tonight
+				game_tonight
 			else
 				@final_results = "Command " + @command.upcase + " not found :("
 		end
@@ -65,21 +24,52 @@ require 'open-uri'
 
 	private
 
-		def sox_tonight
+		def game_tonight
+			# pass in team and venue
+			# pass team along to API
+			# if we get a response, check it against venue
+			# if true, send the opponent and the time
+			# if false, do nothing
+
 			if Rails.env.production?
-				game_today_api_url = "http://www.boxrowseat.com/game_today/Boston-Red-Sox.json"
+				game_today_api_domain = "www.boxrowseat.com"
 			else
-				game_today_api_url = "http://localhost:3030/game_today/New-York-Mets.json"
+				game_today_api_domain = "localhost:3030"
 			end
+			params['team'] = "Boston-Red-Sox"
+			params['venue'] = "Tropicana Field"
+
+			game_today_api_url = "http://#{game_today_api_domain}/game_today/#{params['team']}.json"
 			result = JSON.parse(open(game_today_api_url).read)
-			# result['message'] etc etc etc
-			location = result['location']
-			if location == "Citi Field"
-				@final_results = "There is a game tonight at " + result['start_time'].to_s
+
+			if result['error']
+				render json: {
+					error: result['message']
+				}
 			else
-				@final_results = result.to_s
+				game_location = result['location'].downcase.gsub(/\s+/, '-').gsub(/[^a-z0-9_-]/, '').squeeze('-')
+				request_location = params['venue'].downcase.gsub(/\s+/, '-').gsub(/[^a-z0-9_-]/, '').squeeze('-')
+
+				if request_location == game_location
+					opponent = result['title'].split(' at ').first
+					starty = Time.parse(result['start_time']).strftime('%-1I:%M%p %Z')
+					
+					@final_results = "Sox game vs. #{opponent} at #{starty}"
+				else
+					@final_results = "Not today."
+				end
+
+		    #render json: {
+		     # result: (request_location == game_location.downcase),
+					#opponent: opponent,
+		      #start_time: starty.to_s
+		      #team: params['team'],
+		      #request_location: request_location,
+		      #game_location: game_location,
+		      #brs_result: result.to_s,
+		    #}
 			end
-			# @final_results = result.to_s
+
 		end
 
 		def get_weather
